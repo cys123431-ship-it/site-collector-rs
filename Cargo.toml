@@ -1,0 +1,46 @@
+[package]
+name = "site-collector-rs"
+version = "0.1.0"
+edition = "2021"
+description = "사용자가 입력한 웹사이트 주소와 키워드로 게시글을 자동 수집하는 범용 수집기"
+license = "MIT"
+
+[[bin]]
+name = "site-collector"
+path = "src/main.rs"
+
+[dependencies]
+# HTTP
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "blocking", "gzip", "brotli"] }
+
+# HTML 파싱
+scraper = "0.20"
+regex = "1"
+
+# 직렬화
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# GUI
+eframe = { version = "0.29", default-features = false, features = ["default_fonts", "glow", "persistence"] }
+egui = "0.29"
+
+# 트레이
+tray-icon = "0.19"
+image = { version = "0.25", default-features = false, features = ["png"] }
+
+# 유틸
+chrono = { version = "0.4", features = ["serde"] }
+anyhow = "1"
+thiserror = "2"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+dirs = "5"
+url = "2"
+
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true

@@ -1,0 +1,31 @@
+/target
+
+# ---- 비밀 정보 (절대 커밋 금지) ----
+.env
+*.env
+!.env.example
+
+# 개인 설정 (chat_id, 사이트 목록 등)
+config.json
+
+# 실행 산출물
+output/
+data/
+logs/
+js_engine/render.py
+js_engine/render.js
+
+# Rust
+**/*.rs.bk
+*.pdb
+
+# IDE / OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# 임시 파일
+*.log
+_*.txt
