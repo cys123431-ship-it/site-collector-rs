@@ -49,7 +49,7 @@ fn date_regex() -> regex::Regex {
 }
 
 /// 링크를 패턴화한다. 2자리 이상 숫자를 {id} 로 치환.
-fn patternize(href: &str) -> String {
+pub fn patternize(href: &str) -> String {
     let mut out = String::with_capacity(href.len());
     let mut digits = 0usize;
     for ch in href.chars() {

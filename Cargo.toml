@@ -5,6 +5,11 @@ edition = "2021"
 description = "사용자가 입력한 웹사이트 주소와 키워드로 게시글을 자동 수집하는 범용 수집기"
 license = "MIT"
 
+# 라이브러리 (테스트에서 모듈 재사용)
+[lib]
+name = "site_collector_rs_lib"
+path = "src/lib.rs"
+
 [[bin]]
 name = "site-collector"
 path = "src/main.rs"

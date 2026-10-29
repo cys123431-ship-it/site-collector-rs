@@ -8,7 +8,6 @@ use crate::fetch::Fetcher;
 use crate::state::StateStore;
 use eframe::egui;
 use std::sync::mpsc::{channel, Receiver, Sender};
-use std::sync::{Arc, Mutex};
 
 /// 백그라운드 작업이 GUI 로 보내는 메시지
 enum WorkerMsg {
@@ -53,7 +52,6 @@ pub struct App {
     // 워커 통신
     tx: Sender<WorkerMsg>,
     rx: Option<Receiver<WorkerMsg>>,
-    shared_logs: Arc<Mutex<Vec<String>>>,
 
     // 자동 실행
     auto_hour: u32,
@@ -86,7 +84,6 @@ impl Default for App {
             run_include_seen: false,
             tx,
             rx: Some(rx),
-            shared_logs: Arc::new(Mutex::new(Vec::new())),
             auto_hour: 9,
             auto_minute: 0,
             auto_days: 2,
@@ -177,13 +174,6 @@ impl App {
             }
         }
         let _ = done;
-    }
-
-    fn log_fn(&self) -> crate::pipeline::LogFn {
-        let tx = self.tx.clone();
-        Box::new(move |msg: &str| {
-            let _ = tx.send(WorkerMsg::Log(msg.to_string()));
-        })
     }
 
     // ------------------------------------------------------------ 수집 실행 탭

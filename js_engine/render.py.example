@@ -1,0 +1,68 @@
+"""
+JavaScript 렌더링 헬퍼 (Playwright)
+
+사용법:
+    python render.py <URL>
+
+준비:
+    pip install playwright
+    playwright install chromium
+
+이 스크립트는 사이트 수집기의 js_engine 폴더에 두면 자동으로 인식됩니다.
+본체는 이 파일이 없으면 정적 수집만 사용하므로, 필요할 때만 설치하세요.
+"""
+
+from __future__ import annotations
+
+import sys
+
+
+def main() -> int:
+    if len(sys.argv) < 2:
+        print("사용법: python render.py <URL>", file=sys.stderr)
+        return 2
+
+    url = sys.argv[1]
+
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError:
+        print(
+            "playwright 가 설치되어 있지 않습니다.\n"
+            "  pip install playwright\n"
+            "  playwright install chromium",
+            file=sys.stderr,
+        )
+        return 3
+
+    try:
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            context = browser.new_context(
+                user_agent=(
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                    "AppleWebKit/537.36 (KHTML, like Gecko) "
+                    "Chrome/126.0 Safari/537.36"
+                ),
+                locale="ko-KR",
+            )
+            page = context.new_page()
+
+            # 네트워크가 잠잠해질 때까지 대기 (SPA 대응)
+            page.goto(url, wait_until="networkidle", timeout=30000)
+            html = page.content()
+
+            browser.close()
+
+        # UTF-8 로 표준출력 (Windows 콘솔 인코딩 무시)
+        sys.stdout.buffer.write(html.encode("utf-8"))
+        sys.stdout.buffer.flush()
+        return 0
+
+    except Exception as exc:  # noqa: BLE001
+        print(f"렌더링 실패: {exc}", file=sys.stderr)
+        return 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

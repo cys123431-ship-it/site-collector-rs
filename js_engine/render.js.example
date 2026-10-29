@@ -1,0 +1,54 @@
+/**
+ * JavaScript 렌더링 헬퍼 (Puppeteer)
+ *
+ * 사용법:
+ *   node render.js <URL>
+ *
+ * 준비:
+ *   npm install puppeteer
+ *
+ * 이 스크립트는 사이트 수집기의 js_engine 폴더에 두면 자동으로 인식됩니다.
+ */
+
+const puppeteer = require('puppeteer');
+
+async function main() {
+  const url = process.argv[2];
+  if (!url) {
+    console.error('사용법: node render.js <URL>');
+    process.exit(2);
+  }
+
+  let browser;
+  try {
+    browser = await puppeteer.launch({
+      headless: 'new',
+      args: ['--no-sandbox', '--disable-dev-shm-usage'],
+    });
+
+    const page = await browser.newPage();
+    await page.setUserAgent(
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 ' +
+        '(KHTML, like Gecko) Chrome/126.0 Safari/537.36'
+    );
+
+    await page.goto(url, { waitUntil: 'networkidle2', timeout: 30000 });
+    const html = await page.content();
+
+    process.stdout.write(html);
+    await browser.close();
+    process.exit(0);
+  } catch (err) {
+    if (browser) {
+      try {
+        await browser.close();
+      } catch (_) {
+        /* ignore */
+      }
+    }
+    console.error('렌더링 실패: ' + err.message);
+    process.exit(1);
+  }
+}
+
+main();

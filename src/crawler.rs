@@ -134,7 +134,7 @@ fn collect_onclick_items(
 }
 
 /// 상세 URL 템플릿에 값을 채운다.
-fn build_detail_url(template: &str, page_url: &str, id: &str) -> String {
+pub fn build_detail_url(template: &str, page_url: &str, id: &str) -> String {
     let base = page_url.split('?').next().unwrap_or(page_url);
     let base = base.trim_end_matches('/');
     template
@@ -234,7 +234,7 @@ fn find_date_element(el: &scraper::ElementRef, date_re: &regex::Regex) -> Option
 }
 
 /// 감지된 패턴(예: "/notice/{id}")과 실제 href 가 일치하는지
-fn pattern_matches(pattern: &str, href: &str) -> bool {
+pub fn pattern_matches(pattern: &str, href: &str) -> bool {
     if pattern.is_empty() {
         return true;
     }
@@ -445,7 +445,7 @@ pub fn collect_site(
 }
 
 /// 페이지 번호를 넣은 URL 생성
-fn build_page_url(base: &str, pattern: &str, page: u32) -> String {
+pub fn build_page_url(base: &str, pattern: &str, page: u32) -> String {
     if page <= 1 || pattern.is_empty() {
         return base.to_string();
     }

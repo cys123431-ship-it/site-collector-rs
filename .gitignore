@@ -12,6 +12,7 @@ config.json
 output/
 data/
 logs/
+dist/
 js_engine/render.py
 js_engine/render.js
 
@@ -29,3 +30,6 @@ Thumbs.db
 # 임시 파일
 *.log
 _*.txt
+*_test.py
+*.err
+*.out

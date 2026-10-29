@@ -2,9 +2,13 @@
 
 주소와 키워드만 넣으면 **자동으로 게시판 구조를 감지**해서, 키워드에 걸린 글을 모아 주는 데스크톱 앱입니다.
 
-Rust 로 만들어 **단일 exe**(약 10~15MB)로 배포되며, 런타임 설치가 필요 없습니다.
+Rust 로 만들어 **단일 exe 6.7MB** 로 배포되며, 런타임 설치가 필요 없습니다.
 
 ---
+
+## 다운로드
+
+[Releases](https://github.com/cys123431-ship-it/site-collector-rs/releases) 에서 `site-collector.exe` 를 받아 실행하세요.
 
 ## 핵심 특징
 
@@ -12,34 +16,35 @@ Rust 로 만들어 **단일 exe**(약 10~15MB)로 배포되며, 런타임 설치
 |---|---|
 | **자동 구조 감지** | 주소만 넣으면 게시글 링크·제목·날짜·본문·페이지 이동을 스스로 찾아냄 |
 | **다중 사이트** | 원하는 만큼 주소를 등록 (각각 키워드 지정 가능) |
-| **경량** | Rust + egui. exe 하나로 동작, Python 런타임 불필요 |
+| **경량** | Rust + egui. **단일 exe 6.7MB**, Python 런타임 불필요 |
 | **Markdown 리포트** | 워드·옵시디언·GitHub 에서 바로 열림 |
 | **텔레그램 알림** | 제목+링크만 전송, 명령어로 제어 |
 | **자동 실행** | Windows 작업 스케줄러 등록 |
 | **중복 방지** | 처리한 글 기록으로 재발송 차단 |
 | **JS 사이트 옵션** | Playwright/Puppeteer 를 설치하면 동적 사이트도 지원 |
+| **한글 폰트** | 시스템 폰트(맑은 고딕) 런타임 로딩, 네모(□) 없음 |
 
 ## 빠른 시작
 
-### 1. 빌드
+### 방법 1 — 미리 빌드된 exe
+
+Releases 에서 `site-collector.exe` 다운로드 → 실행
+
+### 방법 2 — 직접 빌드
 
 ```bat
 cargo build --release
+:: 결과물: target\release\site-collector.exe
 ```
 
-결과물: `target\release\site-collector.exe`
-
-### 2. 실행
+또는
 
 ```bat
-site-collector.exe                       :: GUI 실행
-site-collector.exe detect <URL>          :: 주소 구조 분석
-site-collector.exe run --days 2          :: 수집 실행
-site-collector.exe status                :: 상태 확인
-site-collector.exe commands              :: 텔레그램 명령 처리
+release.bat    :: 테스트 + 빌드 + dist 폴더 생성
+run.bat        :: 빌드된 exe 실행
 ```
 
-### 3. 사용 흐름
+### 사용 흐름
 
 1. GUI → **사이트 관리** 탭
 2. 주소 입력 (예: `https://www.pcu.ac.kr/kor/article/Notify_1`)
@@ -48,6 +53,18 @@ site-collector.exe commands              :: 텔레그램 명령 처리
 5. 키워드 입력 (쉼표 구분, 비우면 전체)
 6. **➕ 추가**
 7. **수집 실행** 탭 → **▶ 수집 시작**
+
+## CLI
+
+```bat
+site-collector.exe                       :: GUI 실행
+site-collector.exe detect <URL>          :: 주소 구조 분석
+site-collector.exe run --days 2          :: 수집 실행
+site-collector.exe run --no-telegram     :: 알림 없이 수집
+site-collector.exe status                :: 상태 확인
+site-collector.exe commands              :: 텔레그램 명령 처리
+site-collector.exe --version
+```
 
 ## 자동 감지 원리
 
@@ -79,6 +96,8 @@ onclick 방식은 상세 URL 을 알 수 없으므로, 후보 템플릿을 실�
 | 배재대 일반공지 | ✅ 14건 감지 · 날짜 인식 · 본문 인식 · 페이지 이동 인식 |
 | 배재대 학과공지 | ✅ 10건 감지 · 날짜 인식 · 본문 인식 · 페이지 이동 인식 |
 | Hacker News | ✅ 40건 감지 (제목 선택자 보정 필요) |
+
+**테스트**: 10개 통과 (단위 6 + 통합 4)
 
 ## 텔레그램 설정
 
@@ -113,19 +132,18 @@ onclick 방식은 상세 URL 을 알 수 없으므로, 후보 템플릿을 실�
 
 React/Vue 같은 동적 사이트는 옵션 엔진이 필요합니다. **경량 배포를 위해 기본 미포함**이며, 설치하면 자동 인식됩니다.
 
-**방법 1 — Python + Playwright**
 ```bat
+:: 방법 1 — Python + Playwright
 pip install playwright
 playwright install chromium
+copy js_engine\render.py.example js_engine\render.py
+
+:: 방법 2 — Node.js + Puppeteer
+npm install puppeteer
+copy js_engine\render.js.example js_engine\render.js
 ```
 
-**방법 2 — Node.js + Puppeteer**
-```bat
-npm install -g puppeteer
-```
-
-설치 후 `js_engine/render.py` 또는 `js_engine/render.js` 를 두면 됩니다.
-GUI **정보** 탭에서 인식 여부를 확인할 수 있습니다.
+자세한 내용은 [js_engine/README.md](js_engine/README.md) 를 참고하세요.
 
 > Chromium 은 약 300MB 입니다. 필요할 때만 설치하세요.
 
@@ -134,6 +152,7 @@ GUI **정보** 탭에서 인식 여부를 확인할 수 있습니다.
 | 파일 | 역할 |
 |---|---|
 | `src/main.rs` | CLI 진입점, GUI 실행 |
+| `src/lib.rs` | 라이브러리 루트 |
 | `src/gui.rs` | egui GUI (5개 탭) |
 | `src/detect.rs` | **자동 구조 감지 엔진** (핵심) |
 | `src/crawler.rs` | 감지된 구조로 실제 수집 |
@@ -146,6 +165,7 @@ GUI **정보** 탭에서 인식 여부를 확인할 수 있습니다.
 | `src/config.rs` | 설정 (config.json, .env) |
 | `src/font.rs` | 한글 폰트 로딩 |
 | `src/pipeline.rs` | 전체 파이프라인 |
+| `tests/detect_tests.rs` | 통합 테스트 |
 
 생성되는 폴더 (git 제외):
 ```
@@ -153,15 +173,17 @@ config.json      설정
 .env             봇 토큰 (커밋 금지)
 output/          Markdown 리포트
 data/state.json  중복 방지 이력
+dist/            배포용 (release.bat 결과)
 ```
 
 ## 개발
 
 ```bat
-cargo check          :: 빠른 타입 검사
-cargo test           :: 단위 테스트
-cargo build          :: 디버그 빌드
-cargo build --release :: 최적화 빌드
+cargo check            :: 빠른 타입 검사
+cargo test             :: 테스트 (10개)
+cargo build            :: 디버그 빌드
+cargo build --release  :: 최적화 빌드 (약 2분)
+release.bat            :: 테스트 + 빌드 + dist 생성
 ```
 
 ### 크기 최적화 설정 (Cargo.toml)
@@ -174,6 +196,11 @@ codegen-units = 1
 panic = "abort"
 strip = true
 ```
+
+| 빌드 | 크기 |
+|---|---|
+| debug | 205MB |
+| **release** | **6.69MB** |
 
 ## 주의사항
 
@@ -188,4 +215,4 @@ MIT License — [LICENSE](LICENSE)
 
 ## 관련 프로젝트
 
-배재대학교 전용 프로그램은 별도 저장소에서 관리합니다.
+배재대학교 전용 프로그램은 [pcu-cse-notice-collector](https://github.com/cys123431-ship-it/pcu-cse-notice-collector) 에서 관리합니다.

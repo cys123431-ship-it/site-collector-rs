@@ -3,18 +3,7 @@
 //! 주소와 키워드를 넣으면 그 사이트에서 키워드에 걸리는 게시글을 수집한다.
 //! 자동으로 게시판 구조를 감지하고, Markdown 리포트 + 텔레그램 알림을 제공한다.
 
-mod config;
-mod crawler;
-mod detect;
-mod fetch;
-mod filter;
-mod font;
-mod gui;
-mod js_engine;
-mod pipeline;
-mod report;
-mod state;
-mod telegram;
+use site_collector_rs_lib::{config, detect, fetch, font, gui, pipeline, state, telegram};
 
 use anyhow::Result;
 
